@@ -13,14 +13,15 @@
 //
 
 var fs = require('fs');
+var config;
 try{
-	var config = JSON.parse(fs.readFileSync('./config.json'));
+	config = JSON.parse(fs.readFileSync('./config.json'));
 }
 catch(e){
 	console.log('Creating config file...');
 
 	var uuid = require('node-uuid');
-	var config = {
+	config = {
 		web_port: 8080, // Start a web server on this port
 		tivo_port: 2190, // You probably don't want to change this
 
@@ -218,8 +219,9 @@ discovery.on("listening", function(){
 	var address = discovery.address();
 	console.log("discovery listening " + address.address + ":" + address.port);
 });
-discovery.bind(config.tivo_port);
-discovery.setBroadcast(true);
+discovery.bind(config.tivo_port, undefined, function() {
+	discovery.setBroadcast(true);
+});
 
 // Look for friends every 5s
 var discovery_attempts = 0;
